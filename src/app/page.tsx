@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Header from "@/components/Header";
@@ -7,6 +8,9 @@ import Footer from "@/components/Footer";
 import SectionWrapper from "@/components/SectionWrapper";
 import ServiceTimes from "@/components/ServiceTimes";
 import ScriptureBanner from "@/components/ScriptureBanner";
+import Announcements from "@/components/Announcements";
+import UpcomingEvents from "@/components/UpcomingEvents";
+import { createClient } from "@/lib/supabase/client";
 import {
   FaPray,
   FaBible,
@@ -44,11 +48,44 @@ const fadeUp = {
 };
 
 export default function HomePage() {
+  const [heroTitle, setHeroTitle] = useState("");
+  const [heroSubtitle, setHeroSubtitle] = useState("");
+  const [pastorMessage, setPastorMessage] = useState("");
+  const [bannerText, setBannerText] = useState("");
+  const [bannerActive, setBannerActive] = useState(false);
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from("homepage_settings")
+      .select("*")
+      .limit(1)
+      .single()
+      .then(({ data }) => {
+        if (data) {
+          setHeroTitle(data.hero_title || "");
+          setHeroSubtitle(data.hero_subtitle || "");
+          setPastorMessage(data.pastor_message || "");
+          setBannerText(data.announcement_banner || "");
+          setBannerActive(data.announcement_banner_active ?? false);
+        }
+        setSettingsLoaded(true);
+      });
+  }, []);
+
   return (
     <>
       <Header />
 
       <main>
+        {/* Announcement banner */}
+        {settingsLoaded && bannerActive && bannerText && (
+          <div className="bg-gold-500 py-3 px-4 text-center">
+            <p className="text-navy-900 text-sm font-semibold">{bannerText}</p>
+          </div>
+        )}
+
         {/* ===== 1. HERO SECTION ===== */}
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-navy-900">
           <div className="absolute inset-0">
@@ -81,9 +118,9 @@ export default function HomePage() {
               transition={{ duration: 0.9, delay: 0.4 }}
               className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-white leading-tight"
             >
-              Embracing Faith,
-              <br />
-              <span className="text-gold-400">Compassion &amp; Togetherness</span>
+              {heroTitle || "Embracing Faith,"}
+              {heroTitle && <br />}
+              {!heroTitle && <><br /><span className="text-gold-400">Compassion &amp; Togetherness</span></>}
             </motion.h1>
 
             <motion.p
@@ -92,8 +129,7 @@ export default function HomePage() {
               transition={{ duration: 0.9, delay: 0.6 }}
               className="mt-6 mx-auto max-w-3xl text-base md:text-lg lg:text-xl text-white/70 font-sans leading-relaxed"
             >
-              A fellowship-driven church focused on worship, prayer, biblical
-              teaching, and community impact.
+              {heroSubtitle || "A fellowship-driven church focused on worship, prayer, biblical teaching, and community impact."}
             </motion.p>
 
             <motion.div
@@ -166,7 +202,10 @@ export default function HomePage() {
           </div>
         </SectionWrapper>
 
-        {/* ===== 3. OUR STORY SECTION ===== */}
+        {/* ===== 3. UPCOMING EVENTS ===== */}
+        <UpcomingEvents />
+
+        {/* ===== 4. OUR STORY SECTION ===== */}
         <SectionWrapper className="py-20 md:py-28 bg-gradient-to-br from-cream via-white to-cream">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -228,7 +267,7 @@ export default function HomePage() {
           </div>
         </SectionWrapper>
 
-        {/* ===== 4. WE BELIEVE SECTION ===== */}
+        {/* ===== 5. WE BELIEVE SECTION ===== */}
         <SectionWrapper className="py-20 md:py-28 relative overflow-hidden">
           <div className="absolute inset-0 bg-navy-800" />
           <div className="absolute inset-0 opacity-10">
@@ -282,10 +321,13 @@ export default function HomePage() {
           </div>
         </SectionWrapper>
 
-        {/* ===== 5. SCRIPTURE HIGHLIGHT ===== */}
+        {/* ===== 6. SCRIPTURE HIGHLIGHT ===== */}
         <ScriptureBanner />
 
-        {/* ===== 6. THE POWER OF TOGETHERNESS ===== */}
+        {/* ===== 7. ANNOUNCEMENTS ===== */}
+        <Announcements />
+
+        {/* ===== 8. THE POWER OF TOGETHERNESS ===== */}
         <SectionWrapper className="py-20 md:py-28 bg-white">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
@@ -363,7 +405,7 @@ export default function HomePage() {
           </div>
         </SectionWrapper>
 
-        {/* ===== 7. GIVING & DONATIONS ===== */}
+        {/* ===== 9. GIVING & DONATIONS ===== */}
         <SectionWrapper className="relative py-20 md:py-28 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-navy-900 via-navy-800 to-navy-900" />
           <div className="absolute inset-0 opacity-10">
@@ -433,7 +475,7 @@ export default function HomePage() {
           </div>
         </SectionWrapper>
 
-        {/* ===== 8. MINISTRIES GRID ===== */}
+        {/* ===== 10. MINISTRIES GRID ===== */}
         <SectionWrapper className="py-20 md:py-28 bg-cream">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
@@ -485,7 +527,7 @@ export default function HomePage() {
           </div>
         </SectionWrapper>
 
-        {/* ===== 9. PASTOR WELCOME ===== */}
+        {/* ===== 11. PASTOR WELCOME ===== */}
         <SectionWrapper className="py-20 md:py-28 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-cream via-white to-cream" />
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-gold-200/30 rounded-full blur-3xl" />
@@ -533,24 +575,32 @@ export default function HomePage() {
                   A Warm Welcome to You
                 </h2>
                 <div className="mt-4 h-1 w-16 rounded-full bg-gold-500" />
-                <p className="mt-6 text-base leading-relaxed text-navy-600">
-                  Dear friends and family,
-                </p>
-                <p className="mt-4 text-base leading-relaxed text-navy-600">
-                  It is with great joy that I welcome you to Grace Missionary
-                  Baptist Church. Whether you are searching for a spiritual home,
-                  exploring faith for the first time, or looking to deepen your
-                  walk with Christ, you are welcome here.
-                </p>
-                <p className="mt-4 text-base leading-relaxed text-navy-600">
-                  At GMBC, we are more than a church — we are a family. A family
-                  rooted in faith, strengthened by love, and united in our mission
-                  to share the hope of Jesus Christ with our community and the world.
-                </p>
-                <p className="mt-4 text-base leading-relaxed text-navy-600">
-                  I look forward to meeting you and walking this journey of faith
-                  together. May the Lord richly bless you.
-                </p>
+                {pastorMessage ? (
+                  <div className="mt-6 text-base leading-relaxed text-navy-600 space-y-4 whitespace-pre-line">
+                    {pastorMessage}
+                  </div>
+                ) : (
+                  <>
+                    <p className="mt-6 text-base leading-relaxed text-navy-600">
+                      Dear friends and family,
+                    </p>
+                    <p className="mt-4 text-base leading-relaxed text-navy-600">
+                      It is with great joy that I welcome you to Grace Missionary
+                      Baptist Church. Whether you are searching for a spiritual home,
+                      exploring faith for the first time, or looking to deepen your
+                      walk with Christ, you are welcome here.
+                    </p>
+                    <p className="mt-4 text-base leading-relaxed text-navy-600">
+                      At GMBC, we are more than a church &mdash; we are a family. A family
+                      rooted in faith, strengthened by love, and united in our mission
+                      to share the hope of Jesus Christ with our community and the world.
+                    </p>
+                    <p className="mt-4 text-base leading-relaxed text-navy-600">
+                      I look forward to meeting you and walking this journey of faith
+                      together. May the Lord richly bless you.
+                    </p>
+                  </>
+                )}
                 <p className="mt-6 font-serif text-lg font-semibold text-navy-800">
                   In Christ&apos;s service,
                 </p>
@@ -562,7 +612,7 @@ export default function HomePage() {
           </div>
         </SectionWrapper>
 
-        {/* ===== 10. CONTACT CTA ===== */}
+        {/* ===== 12. CONTACT CTA ===== */}
         <SectionWrapper className="relative py-20 md:py-28 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-gold-600 to-gold-500" />
           <div className="absolute inset-0 opacity-10">
