@@ -94,10 +94,6 @@ CREATE TABLE homepage_settings (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TRIGGER update_homepage_settings_updated_at
-  BEFORE UPDATE ON homepage_settings
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-
 ALTER TABLE homepage_settings ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allow all for authenticated users" ON homepage_settings
@@ -116,6 +112,10 @@ BEGIN
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_homepage_settings_updated_at
+  BEFORE UPDATE ON homepage_settings
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 CREATE TRIGGER update_announcements_updated_at
   BEFORE UPDATE ON announcements
