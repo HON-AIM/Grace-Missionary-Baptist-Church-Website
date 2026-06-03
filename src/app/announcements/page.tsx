@@ -100,55 +100,56 @@ export default function AnnouncementsPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {announcements.map((item, i) => (
-                  <motion.div
-                    key={item.id}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: i * 0.08 }}
-                    className={`group rounded-xl border overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-gold-500/10 hover:-translate-y-2 ${
-                      item.is_pinned
-                        ? "border-gold-300 bg-gradient-to-b from-gold-50/50 to-white shadow-lg shadow-gold-500/5"
-                        : "border-navy-100/50 bg-gradient-to-b from-cream to-white shadow-lg hover:border-gold-300"
-                    }`}
-                  >
-                    {item.image && (
-                      <div className="relative h-48 overflow-hidden">
-                        <img
-                          src={item.image}
-                          alt={item.title}
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                  <Link key={item.id} href={`/announcements/${item.id}`}>
+                    <motion.div
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: i * 0.08 }}
+                      className={`group rounded-xl border overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-gold-500/10 hover:-translate-y-2 cursor-pointer ${
+                        item.is_pinned
+                          ? "border-gold-300 bg-gradient-to-b from-gold-50/50 to-white shadow-lg shadow-gold-500/5"
+                          : "border-navy-100/50 bg-gradient-to-b from-cream to-white shadow-lg hover:border-gold-300"
+                      }`}
+                    >
+                      {item.image && (
+                        <div className="relative h-48 overflow-hidden">
+                          <img
+                            src={item.image}
+                            alt={item.title}
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                        </div>
+                      )}
+                      <div className="p-5">
+                        <div className="flex items-center gap-2 mb-3">
+                          <span
+                            className={`px-2 py-0.5 rounded text-xs font-medium ${
+                              categoryStyles[item.category] || categoryStyles.General
+                            }`}
+                          >
+                            {item.category}
+                          </span>
+                          {item.is_pinned && (
+                            <span className="text-xs font-medium text-gold-600">Pinned</span>
+                          )}
+                        </div>
+                        <h3 className="font-serif text-lg font-bold text-navy-800 group-hover:text-gold-700 transition-colors">
+                          {item.title}
+                        </h3>
+                        <p className="mt-1 text-xs text-navy-400 flex items-center gap-1">
+                          <FaCalendar className="h-3 w-3" />
+                          {formatDate(item.date)}
+                        </p>
+                        <p className="mt-2 text-sm leading-relaxed text-navy-500">
+                          {stripMarkdown(item.content).length > 200
+                            ? stripMarkdown(item.content).slice(0, 200).trimEnd() + "..."
+                            : stripMarkdown(item.content)}
+                        </p>
                       </div>
-                    )}
-                    <div className="p-5">
-                      <div className="flex items-center gap-2 mb-3">
-                        <span
-                          className={`px-2 py-0.5 rounded text-xs font-medium ${
-                            categoryStyles[item.category] || categoryStyles.General
-                          }`}
-                        >
-                          {item.category}
-                        </span>
-                        {item.is_pinned && (
-                          <span className="text-xs font-medium text-gold-600">Pinned</span>
-                        )}
-                      </div>
-                      <h3 className="font-serif text-lg font-bold text-navy-800 group-hover:text-gold-700 transition-colors">
-                        {item.title}
-                      </h3>
-                      <p className="mt-1 text-xs text-navy-400 flex items-center gap-1">
-                        <FaCalendar className="h-3 w-3" />
-                        {formatDate(item.date)}
-                      </p>
-                      <p className="mt-2 text-sm leading-relaxed text-navy-500">
-                        {stripMarkdown(item.content).length > 200
-                          ? stripMarkdown(item.content).slice(0, 200).trimEnd() + "..."
-                          : stripMarkdown(item.content)}
-                      </p>
-                    </div>
-                  </motion.div>
+                    </motion.div>
+                  </Link>
                 ))}
               </div>
             )}
